@@ -1,1 +1,109 @@
-Kubernetes Dashboard 
+Deploy Kubernetes Dashboard
+_______
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+wget https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+
+Change the file name
+______
+
+mv recommended.yaml kubernetes-dashboard-deployment.yml 
+
+Modify the Kubernetes dashboard service to be of NodePort type.
+____________
+
+vim kubernetes-dashboard-deployment.yml
+
+Provide the type.
+-----
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: kubernetes-dashboard
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+spec:
+  ports:
+    - port: 443
+      targetPort: 8443
+  selector:
+    k8s-app: kubernetes-dashboard
+  type: NodePortApply the changes.
+
+-------------
+
+Apply the changes.
+
+kubectl apply -f kubernetes-dashboard-deployment.yml
+
+---------------------------------------------------------------------------
+
+Check deployment status:
+
+kubectl get deployments -n kubernetes-dashboard
+
+------------------------------------------------
+Check dashboard and metrics status.
+
+kubectl get pods -n kubernetes-dashboard
+
+--------------------------------------------------
+Check service type status.Change to NodePort.
+
+kubectl get service -n kubernetes-dashboard  
+
+------------------------------------------------
+server-ip:nodeport/#/login
+_________________________________
+
+Creating a Service Account manifest file.  
+
+vim dashboard-adminuser.yaml 
+
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+  
+ ------------------
+After creating a file apply the manifest to create objects in kubernetes cluster
+
+
+kubectl apply -f dashboard-adminuser.yaml  
+
+-------------------------------------
+
+Create a Cluster Role Binding
+
+
+ vim admin-rbac.yml
+ 
+ apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+  
+  -----------------------------------------
+ Apply the file.
+  
+ kubectl apply -f admin-rbac.yml
+---------------------------------------------
+Get admin user token
+ 
+ kubectl -n kubernetes-dashboard create token admin-user
+ 
+  
+  
