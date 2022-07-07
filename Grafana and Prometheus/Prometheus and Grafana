@@ -1,0 +1,58 @@
+Install Prometheus and Grafana on Kubernetes using Helm 3 
+--------------------------------
+
+helm repo add stable https://charts.helm.sh/stable
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm search repo prometheus-community
+helm install stable prometheus-community/kube-prometheus-stack
+kubectl get pods # Lets check prometheus and grafana pods
+kubectl get svc #Lets check prometheus and grafana services
+
+
+------------------------------------------------------------------------------------
+
+Edit Prometheus Service
+
+-------------------------------------------------------------------------
+
+kubectl edit svc stable-kube-prometheus-sta-prometheus 
+
+
+Here we are changing from ClusterIP to LoadBalancer/NodePort
+
+--------------------------------------------------------------------------
+Edit Grafana Service 
+
+--------------------------------------------------------------------------
+
+kubectl edit svc stable-grafana
+
+Change from ClusterIP to LoadBalancer/NodePort
+
+--------------------------------------------------------------------------------
+
+kubectl get svc   #Verify the service if changed to LoadBalancer/NodePort
+
+------------------------------------------------------------------------------
+
+Access Prometheus and Grafana WEB Interface
+
+----------
+To access Prometheus web interface copy Loadbalancer URL and port number 9090
+
+http://a9042a504d25f4122b6aa52ed5e53b57-356305290.ap-south-1.elb.amazonaws.com:9090
+or
+
+machine-ip:NodePort
+
+-------------------------------------
+To access Grafana web interface copy Loadbalancer URL and port number 80
+
+http://a7ebeb0da858f42328904560e7ce83c5-996403152.ap-south-1.elb.amazonaws.com
+or
+machine-ip:NodePort
+
+UserName: admin
+Password: prom-operator
+
+---------------------------------------------------
